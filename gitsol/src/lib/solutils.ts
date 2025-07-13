@@ -16,14 +16,18 @@ export async function getSolBalanaceInUSD(publicKey: string): Promise<number> {
 
   const userSol = (await connection.getBalance(wallet)) / LAMPORTS_PER_SOL;
 
-  const response = await fetch("https://price.jup.ag/v6/price?ids=SOL", {
-    method: "GET",
-  });
+  // const response = await fetch("https://price.jup.ag/v6/price?ids=SOL", {
+  //   method: "GET",
+  // });
 
+  // const data = await response.json();
+
+  // const currentPrice = data.data?.SOL?.price ?? 0;
+  const response = await fetch(
+    "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
+  );
   const data = await response.json();
-
-  const currentPrice = data.data?.SOL?.price ?? 0;
-
+  const currentPrice = data.solana.usd;
   const userBal = userSol * currentPrice;
 
   return userBal;

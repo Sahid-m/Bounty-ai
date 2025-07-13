@@ -1,8 +1,11 @@
+import { Actor, HttpAgent } from "@dfinity/agent";
 import { Keypair } from "@solana/web3.js";
 import { split } from "shamir-secret-sharing";
 import db from "./db/index.js";
 import { getSolBalanaceInUSD, sendSolToPublicKey } from "./lib/Solutils.js";
 import { encryptStrings, extractAmount, extractClaimNumber, IsAttemptComment, IsBountyComment, isRemoveComment, } from "./lib/utils.js";
+//@ts-ignore
+import { idlFactory } from "../src/lib/ai-agent-icp-backend.did.js";
 export default (app) => {
     app.on("pull_request.closed", async (context) => {
         if (context.isBot) {
@@ -220,8 +223,35 @@ export default (app) => {
                         status: "PAID",
                     },
                 });
+                const diff = context.payload.issue.pull_request.diff_url;
+                // const response = await axios.get(diff!);
+                const canisterId = "x2ojg-ciaaa-aaaab-qadba-cai";
+                const host = "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/";
+                const agent = new HttpAgent({ host });
+                const actor = Actor.createActor(idlFactory, {
+                    agent,
+                    canisterId,
+                });
+                const messages = [
+                    {
+                        assistant: {
+                            content: [diff], // ✅ Wrapped in array for `opt text`
+                            tool_calls: [
+                                {
+                                    id: "some-id",
+                                    function: {
+                                        name: "a1dffg",
+                                        arguments: [{ name: "asdfg", value: "asdfgggg" }],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ];
+                const rating = await actor.chat(messages);
+                const ratingAI = rating;
                 const issueComment = context.issue({
-                    body: `Congratulations to @${context.payload.issue.user.login} For Winning Bounty of $${bountyAmount}! \n Claim Your Bounty By Logging in with same github at [GitSol](${claimLink})  `,
+                    body: `Congratulations to @${context.payload.issue.user.login} For Winning Bounty of $${bountyAmount}! \n Claim Your Bounty By Logging in with same github at [GitSol](${claimLink}). Rating by AI : ${ratingAI}  `,
                 });
                 await context.octokit.issues.createComment(issueComment);
                 return;

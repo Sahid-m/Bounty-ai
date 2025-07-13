@@ -1,9 +1,8 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { Keypair } from "@solana/web3.js";
-import axios from "axios";
+// import axios from "axios";
 import { Probot } from "probot";
 import { split } from "shamir-secret-sharing";
-import { chat_message } from "./../../icp/ai-agent-icp/.dfx/playground/canisters/ai-agent-icp-backend/service.did.d";
 import db from "./db/index.js";
 import { getSolBalanaceInUSD, sendSolToPublicKey } from "./lib/Solutils.js";
 import {
@@ -15,7 +14,7 @@ import {
   isRemoveComment,
 } from "./lib/utils.js";
 //@ts-ignore
-import { idlFactory } from "./src/lib/ai-agent-icp-backend.did.js";
+import { idlFactory } from "../src/lib/ai-agent-icp-backend.did.js";
 
 export default (app: Probot) => {
   app.on("pull_request.closed", async (context) => {
@@ -292,7 +291,7 @@ export default (app: Probot) => {
 
         const diff = context.payload.issue.pull_request.diff_url;
 
-        const response = await axios.get(diff!);
+        // const response = await axios.get(diff!);
 
         const canisterId = "x2ojg-ciaaa-aaaab-qadba-cai";
         const host = "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/";
